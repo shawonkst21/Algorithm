@@ -103,6 +103,7 @@ int32_t main()
                }
           }
           res[i.idx]=cnt;
+          
       }
       for(int i=0;i<t;i++)
       {

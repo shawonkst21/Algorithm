@@ -1,90 +1,89 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-
-const int MAXN = 100005;
-const int MAXQ = 50000;
-
-int arr[MAXN], freq[MAXN], answers[MAXQ], block_size, distinct_count;
-struct Query {
-    int L, R, index;
-};
-
-bool cmp(Query a, Query b) {
-    if (a.L / block_size != b.L / block_size)
-        return a.L / block_size < b.L / block_size;
-    return a.R < b.R;
-}
-
-void add(int position) {
-    if (freq[arr[position]] == 0)
-        distinct_count++;
-    freq[arr[position]]++;
-}
-
-void remove(int position) {
-    if (freq[arr[position]] == 1)
-        distinct_count--;
-    freq[arr[position]]--;
-}
-
-int main() {
+#define int long long
+#define yes cout<<"YES"<<endl
+#define no cout<<"NO"<<endl
+#define endl "\n"
+#define testCase \
+    int t;       \
+    cin >> t;    \
+    while (t--)
+void faster() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    
-    int t;
-    cin >> t;
-    for (int test_case = 1; test_case <= t; test_case++) {
-        int n, q;
-        cin >> n >> q;
-
-        block_size = sqrt(n);
-        vector<Query> queries(q);
-        
-        for (int i = 0; i < n; i++)
-            cin >> arr[i];
-        
-        for (int i = 0; i < q; i++) {
-            cin >> queries[i].L >> queries[i].R;
-            queries[i].L--; // convert to 0-based index
-            queries[i].R--; // convert to 0-based index
-            queries[i].index = i;
-        }
-        
-        sort(queries.begin(), queries.end(), cmp);
-        
-        memset(freq, 0, sizeof(freq));
-        distinct_count = 0;
-        
-        int currentL = 0, currentR = -1;
-        
-        for (int i = 0; i < q; i++) {
-            int L = queries[i].L;
-            int R = queries[i].R;
-            
-            while (currentL < L) {
-                remove(currentL);
-                currentL++;
+}
+vector<int>ans;
+vector<int> createLpsArray(const string& pat) {
+    vector<int> lps(pat.size());
+    int index = 0;
+    lps[0] = 0;
+    for (int i = 1; i < pat.size();) {
+        if (pat[index] == pat[i]) {
+            lps[i] = index + 1;
+            ++i;
+            ++index;
+        } else {
+            if (index != 0) {
+                index = lps[index - 1];
+            } else {
+                lps[i] = index;
+                ++i;
             }
-            while (currentL > L) {
-                currentL--;
-                add(currentL);
-            }
-            while (currentR < R) {
-                currentR++;
-                add(currentR);
-            }
-            while (currentR > R) {
-                remove(currentR);
-                currentR--;
-            }
-            
-            answers[queries[i].index] = distinct_count;
-        }
-        
-        cout << "Case " << test_case << ":\n";
-        for (int i = 0; i < q; i++) {
-            cout << answers[i] << "\n";
         }
     }
-    return 0;
+    return lps;
+}
+
+void kmp(const string& text, const string& pat) {
+    vector<int> lps = createLpsArray(pat);
+    int i = 0;
+    int j = 0; 
+    int count = 0;
+
+    while (i < text.size()) {
+        if (pat[j] == text[i]) {
+            ++i;
+            ++j;
+        }
+
+        if (j == pat.size()) {
+            ans.push_back(i-pat.size());
+            j = lps[j - 1];
+        } else if (i < text.size() && pat[j] != text[i]) {
+            if (j != 0) {
+                j = lps[j - 1];
+            } else {
+                ++i;
+            }
+        }
+    }
+    if(ans.size()==0)
+    {
+        cout<<"Not Found"<<endl;
+        cout<<endl;
+    }
+    else
+    {
+        cout<<ans.size()<<endl;
+        for(auto i:ans)
+        {
+            cout<<i+1<<' ';
+        }cout<<endl;
+        cout<<endl;
+    }
+
+    return;
+}
+
+int32_t main() {
+    faster();
+    testCase
+    {
+         string text, pat;
+         cin >> text >> pat;
+         kmp(text, pat);
+         ans.clear();
+         
+    }
+   
 }
